@@ -28,7 +28,6 @@ classifiers = [
 # 核心依赖 (本地和云端共用)
 dependencies = [
     "numpy>=1.24.0",
-    "torch>=2.0.0",
     "websockets>=12.0",
     "pyyaml>=6.0",
     "coloredlogs>=15.0",
@@ -38,6 +37,8 @@ dependencies = [
 [project.optional-dependencies]
 # 本地客户端依赖 (Windows + RTX 3060)
 local = [
+    "torch>=2.0.0",
+    "torchvision>=0.15.0",
     "torchaudio>=2.0.0",
     "sounddevice>=0.4.6",
     "scipy>=1.11.0",
@@ -47,6 +48,7 @@ local = [
 
 # 云端服务依赖 (Ubuntu + RTX 3080 Ti)
 cloud = [
+    "torch>=2.0.0",
     "vllm>=0.4.0",
     "transformers>=4.40.0",
     "accelerate>=0.27.0",
@@ -112,3 +114,8 @@ ignore_missing_imports = true
 asyncio_mode = "auto"
 testpaths = ["tests"]
 python_files = ["test_*.py"]
+
+# uv 配置 - 指定 PyTorch CUDA 索引
+[tool.uv]
+index-url = "https://pypi.org/simple"
+extra-index-url = ["https://download.pytorch.org/whl/cu121"]

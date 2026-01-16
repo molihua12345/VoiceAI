@@ -45,17 +45,11 @@
 
 **本地客户端 (Windows):**
 ```bash
-# 仅安装本地客户端依赖
-pip install -e ".[local]"
-
-# 仅安装云端服务依赖  
-pip install -e ".[cloud]"
-
-# 安装所有依赖
-pip install -e ".[all]"
-
-# 安装开发依赖
-pip install -e ".[dev]"
+# 同步安装（会自动创建虚拟环境）
+uv sync --extra local    # 本地客户端
+uv sync --extra cloud    # 云端服务
+uv sync --extra all      # 全部依赖
+uv sync --extra dev      # 开发依赖
 ```
 
 ### 2. 启动服务
@@ -78,6 +72,7 @@ chmod +x start_server.sh
 然后在本地启动客户端：
 ```bash
 # Windows
+.venv\Scripts\Activate.ps1
 start_local.bat -s ws://云端IP:8765
 ```
 

@@ -11,3 +11,4 @@ __pycache__
 .torch_cache
 .env
 voiceai.egg-info
+test
