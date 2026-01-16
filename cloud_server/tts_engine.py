@@ -26,16 +26,16 @@ class TTSConfig:
     api_url: str = "http://127.0.0.1:9880"
     
     # 参考音频配置
-    ref_audio_path: str = ""  # 参考音频路径（服务端可访问的路径）
-    prompt_text: str = ""     # 参考音频对应的文本
+    ref_audio_path: str = "warma_10_0002.wav"  # 参考音频路径（服务端可访问的路径）
+    prompt_text: str = "我觉得大家好就看起来其实还不够有诚意，我是不是应该一个一个的问好"     # 参考音频对应的文本
     prompt_lang: str = "zh"   # 参考音频语言
     
     # 合成参数
     sample_rate: int = 32000  # GPT-SoVITS v4 输出采样率
     text_lang: str = "zh"     # 合成文本语言
     
-    # 流式模式: 0=关闭, 1=最佳质量, 2=中等质量, 3=快速响应
-    streaming_mode: int = 3
+    # 流式模式: 0/false=关闭, 1/true=最佳质量, 2=中等质量, 3=快速响应
+    streaming_mode: Union[int, bool] = True
     
     # 推理参数
     top_k: int = 15
@@ -196,15 +196,18 @@ class GPTSoVITSEngine:
         通过 HTTP API 调用 GPT-SoVITS 进行流式合成
         
         API 文档: GPT-SoVITS/api_v2.py
+        使用 GET 请求，参数通过 URL 查询字符串传递
         streaming_mode:
-            0: 关闭流式
-            1: 最佳质量，最慢响应 (return_fragment=True)
-            2: 中等质量，较慢响应 (streaming_mode=True)
-            3: 较低质量，快速响应 (streaming_mode=True, fixed_length_chunk=True)
+            0/false: 关闭流式
+            1/true: 最佳质量，最慢响应
+            2: 中等质量，较慢响应
+            3: 较低质量，快速响应
         """
+        from urllib.parse import urlencode
+        
         session = await self._get_session()
         
-        # 构建请求参数
+        # 构建查询参数
         params = {
             "text": text,
             "text_lang": self.config.text_lang.lower(),
@@ -217,24 +220,22 @@ class GPTSoVITSEngine:
             "speed_factor": self.config.speed_factor,
             "text_split_method": self.config.text_split_method,
             "batch_size": self.config.batch_size,
-            "parallel_infer": self.config.parallel_infer,
             "repetition_penalty": self.config.repetition_penalty,
-            "streaming_mode": self.config.streaming_mode,
-            "overlap_length": self.config.overlap_length,
-            "min_chunk_length": self.config.min_chunk_length,
-            "fragment_interval": self.config.fragment_interval,
+            "streaming_mode": str(self.config.streaming_mode) if isinstance(self.config.streaming_mode, int) else ("true" if self.config.streaming_mode else "false"),
             "media_type": "raw",  # 返回原始 PCM 数据
         }
         
-        url = f"{self.config.api_url}/tts"
-        logger.debug(f"TTS API request: {url}, text: '{text[:50]}...'")
+        # 构建完整 URL
+        url = f"{self.config.api_url}/tts?{urlencode(params)}"
+        logger.debug(f"TTS API request: {url[:200]}...")
         
         try:
             start_time = time.time()
             first_chunk_time = None
             total_bytes = 0
             
-            async with session.post(url, json=params) as response:
+            # 使用 GET 请求
+            async with session.get(url) as response:
                 if response.status != 200:
                     error_text = await response.text()
                     logger.error(f"TTS API error: {response.status} - {error_text}")

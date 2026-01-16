@@ -21,7 +21,7 @@ class LLMConfig:
     top_p: float = 0.9
     top_k: int = 50
     repetition_penalty: float = 1.1
-    gpu_memory_utilization: float = 0.85
+    gpu_memory_utilization: float = 0.75
 
 
 @dataclass
@@ -115,6 +115,7 @@ class LLMEngine:
                 gpu_memory_utilization=self.config.gpu_memory_utilization,
                 dtype="half",  # FP16
                 quantization="awq",
+                max_model_len=4096,
                 enforce_eager=False,  # 启用 CUDA graph
             )
             
