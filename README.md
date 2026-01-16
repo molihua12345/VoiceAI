@@ -65,6 +65,10 @@ test_mock.bat
 先在云端机器启动服务：
 ```bash
 # Ubuntu
+# 配置GPT_SoVITS/configs/tts_infer.yaml修改 custom 部分并启动 GPT-SoVITS 服务
+cd GPT-SoVITS
+python api_v2.py -a 127.0.0.1 -p 9880 -c GPT_SoVITS/configs/tts_infer.yaml
+
 chmod +x start_server.sh
 ./start_server.sh
 ```
@@ -72,7 +76,10 @@ chmod +x start_server.sh
 然后在本地启动客户端：
 ```bash
 # Windows
-.venv\Scripts\Activate.ps1
+.venv\Scripts\Activate.ps1 #powershell
+# or
+.venv\Scripts\activate.bat # cmd
+
 start_local.bat -s ws://云端IP:8765
 ```
 

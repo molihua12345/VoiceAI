@@ -52,6 +52,7 @@ cloud = [
     "vllm>=0.4.0",
     "transformers>=4.40.0",
     "accelerate>=0.27.0",
+    "aiohttp>=3.9.0",  # TTS HTTP API 调用
 ]
 
 # 完整安装 (本地 + 云端)
