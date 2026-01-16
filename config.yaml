@@ -1,0 +1,71 @@
+# VoiceAI 实时语音对话系统 - 默认配置文件
+
+# 全局配置
+use_mock: false  # 是否使用模拟模式（用于测试）
+debug: false     # 是否启用调试日志
+
+# 本地客户端配置
+local_client:
+  # 音频采集配置
+  audio:
+    sample_rate: 16000       # 采样率 (Hz)
+    channels: 1              # 通道数
+    frame_duration_ms: 32    # 帧时长 (ms)
+    pre_buffer_ms: 100       # 预缓冲时长 (ms)
+    device_index: null       # 音频设备索引，null 为默认设备
+  
+  # VAD 配置
+  vad:
+    threshold: 0.5                 # 语音检测阈值
+    min_speech_duration_ms: 250    # 最小语音持续时间 (ms)
+    min_silence_duration_ms: 300   # 最小静音持续时间 (ms)
+    speech_pad_ms: 30              # 语音前后填充 (ms)
+    use_gpu: true                  # 是否使用 GPU
+  
+  # ASR 配置
+  asr:
+    model_path: null              # 模型路径，null 为自动下载
+    language: "zh"                # 语言
+    use_itn: true                 # 是否使用逆文本标准化
+    use_gpu: true                 # 是否使用 GPU
+    min_audio_length_ms: 500      # 最小音频长度 (ms)
+    max_audio_length_ms: 10000    # 最大音频长度 (ms)
+  
+  # 网络配置
+  network:
+    client_server_url: "ws://localhost:8765"  # 云端服务地址
+    heartbeat_interval: 10.0                  # 心跳间隔 (s)
+    reconnect_base_delay: 1.0                 # 重连基础延迟 (s)
+    reconnect_max_delay: 60.0                 # 重连最大延迟 (s)
+    tcp_nodelay: true                         # 禁用 Nagle 算法
+
+# 云端服务配置
+cloud_server:
+  # LLM 配置
+  llm:
+    model_name: "Qwen/Qwen2-7B-Instruct-AWQ"  # 模型名称
+    max_tokens: 512                           # 最大生成 token 数
+    temperature: 0.7                          # 温度
+    top_p: 0.9                                # Top-P 采样
+    top_k: 50                                 # Top-K 采样
+    repetition_penalty: 1.1                   # 重复惩罚
+    gpu_memory_utilization: 0.85              # GPU 内存利用率
+    system_prompt: "你是一个友好的AI助手，请用简洁自然的语言回答问题。"
+  
+  # TTS 配置
+  tts:
+    model_path: ""            # GPT-SoVITS 模型路径
+    ref_audio_path: ""        # 参考音频路径
+    ref_text: ""              # 参考文本
+    sample_rate: 48000        # 输出采样率 (Hz)
+    streaming_mode: 3         # 流式模式
+    overlap_length: 2         # 重叠长度
+    speed: 1.0                # 语速
+    language: "zh"            # 语言
+  
+  # 网络配置
+  network:
+    server_host: "0.0.0.0"    # 绑定地址
+    server_port: 8765         # 端口
+    heartbeat_interval: 10.0  # 心跳间隔 (s)
+    tcp_nodelay: true         # 禁用 Nagle 算法

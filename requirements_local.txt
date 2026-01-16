@@ -1,0 +1,30 @@
+# VoiceAI 实时语音对话系统 - 本地客户端依赖
+# Windows 11 + RTX 3060 环境
+
+# 基础依赖
+numpy>=1.24.0
+torch>=2.0.0
+torchaudio>=2.0.0
+
+# 音频处理
+sounddevice>=0.4.6
+scipy>=1.11.0
+
+# VAD (Silero-VAD)
+# 通过 torch.hub 加载，无需额外安装
+
+# ASR (SenseVoiceSmall)
+funasr>=1.0.0
+modelscope>=1.9.0
+
+# WebSocket
+websockets>=12.0
+
+# 配置管理
+pyyaml>=6.0
+
+# 日志
+coloredlogs>=15.0
+
+# 其他
+typing_extensions>=4.0.0

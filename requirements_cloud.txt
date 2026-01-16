@@ -1,0 +1,28 @@
+# VoiceAI 实时语音对话系统 - 云端服务依赖
+# Ubuntu 22.04 + RTX 3080 Ti 环境
+
+# 基础依赖
+numpy>=1.24.0
+torch>=2.0.0
+
+# LLM (vLLM + Qwen2)
+vllm>=0.4.0
+transformers>=4.40.0
+accelerate>=0.27.0
+
+# TTS (GPT-SoVITS)
+# GPT-SoVITS 需要单独安装，参考官方仓库
+# https://github.com/RVC-Boss/GPT-SoVITS
+
+# WebSocket
+websockets>=12.0
+
+# 配置管理
+pyyaml>=6.0
+
+# 日志
+coloredlogs>=15.0
+
+# 其他
+typing_extensions>=4.0.0
+asyncio>=3.4.3
