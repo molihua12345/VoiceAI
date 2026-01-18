@@ -57,7 +57,7 @@ cloud_server:
     model_path: ""            # GPT-SoVITS 模型路径
     ref_audio_path: ""        # 参考音频路径
     ref_text: ""              # 参考文本
-    sample_rate: 48000        # 输出采样率 (Hz)
+    sample_rate: 32000        # 输出采样率 (Hz) - GPT-SoVITS v4
     streaming_mode: 3         # 流式模式
     overlap_length: 2         # 重叠长度
     speed: 1.0                # 语速

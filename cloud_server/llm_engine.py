@@ -16,12 +16,12 @@ logger = logging.getLogger(__name__)
 class LLMConfig:
     """LLM 配置"""
     model_name: str = "Qwen/Qwen2-7B-Instruct-AWQ"
-    max_tokens: int = 512
+    max_tokens: int = 1024
     temperature: float = 0.7
     top_p: float = 0.9
     top_k: int = 50
     repetition_penalty: float = 1.1
-    gpu_memory_utilization: float = 0.75
+    gpu_memory_utilization: float = 0.7
 
 
 @dataclass

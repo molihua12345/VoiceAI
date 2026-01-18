@@ -214,7 +214,7 @@ class AudioPlayer:
     
     def __init__(
         self,
-        sample_rate: int = 48000,  # TTS 输出采样率
+        sample_rate: int = 32000,  # TTS 输出采样率 (GPT-SoVITS v4)
         channels: int = 1,
         buffer_duration_ms: int = 200,  # 缓冲区时长
         device: Optional[int] = None
@@ -369,7 +369,7 @@ class FullDuplexAudio:
     def __init__(
         self,
         capture_sample_rate: int = AudioConfig.SAMPLE_RATE,
-        playback_sample_rate: int = 48000
+        playback_sample_rate: int = 32000
     ):
         self.capture = AudioCapture(sample_rate=capture_sample_rate)
         self.player = AudioPlayer(sample_rate=playback_sample_rate)

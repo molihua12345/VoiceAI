@@ -61,7 +61,7 @@ class TTSConfig:
     model_path: str = ""
     ref_audio_path: str = ""
     ref_text: str = ""
-    sample_rate: int = 48000
+    sample_rate: int = 32000
     streaming_mode: int = 3
     overlap_length: int = 2
     speed: float = 1.0

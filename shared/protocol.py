@@ -119,7 +119,7 @@ class AudioConfig:
 
 class TTSConfig:
     """TTS 配置常量"""
-    SAMPLE_RATE = 48000          # 48kHz 高保真
+    SAMPLE_RATE = 32000          # 32kHz (GPT-SoVITS v4 输出采样率)
     CHANNELS = 1
     SAMPLE_WIDTH = 2
 

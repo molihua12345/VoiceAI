@@ -481,6 +481,7 @@ Thankful to @Naozumi520 for providing the Cantonese training set and for the gui
 ```
 conda install -c conda-forge gcc_linux-64 gxx_linux-64
 pip install -r extra-req.txt
+python -c "import nltk; nltk.download('averaged_perceptron_tagger_eng')"
 ```
 1. 降级 PyTorch (最关键的一步)
 2.9.1 这个版本太不稳定，且依赖关系极其复杂。我们回到被广泛测试过的 2.3.1 版本，这个版本不会强制要求 torchcodec。
