@@ -15,6 +15,7 @@ HOST="0.0.0.0"
 PORT=8765
 MOCK_MODE=""
 DEBUG_MODE=""
+NO_INTERRUPT=""
 
 # 解析参数
 while [[ $# -gt 0 ]]; do
@@ -35,6 +36,10 @@ while [[ $# -gt 0 ]]; do
             DEBUG_MODE="-d"
             shift
             ;;
+        -n|--no-interrupt)
+            NO_INTERRUPT="-n"
+            shift
+            ;;
         *)
             shift
             ;;
@@ -45,9 +50,10 @@ echo "Starting cloud server..."
 echo "Host: $HOST"
 echo "Port: $PORT"
 echo "Mock mode: ${MOCK_MODE:-disabled}"
+echo "Interrupt: ${NO_INTERRUPT:+disabled}${NO_INTERRUPT:-enabled}"
 echo ""
 
-python3 -m cloud_server.main -H "$HOST" -p "$PORT" $MOCK_MODE $DEBUG_MODE
+python3 -m cloud_server.main -H "$HOST" -p "$PORT" $MOCK_MODE $DEBUG_MODE $NO_INTERRUPT
 
 if [ $? -ne 0 ]; then
     echo ""

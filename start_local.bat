@@ -19,7 +19,7 @@ set PYTHONPATH=%~dp0
 set CUDA_VISIBLE_DEVICES=0
 
 REM 解析参数
-set SERVER_URL=ws://localhost:8765
+set SERVER_URL=ws://117.50.199.84:8765
 set DEBUG_MODE=
 set NO_GPU=
 

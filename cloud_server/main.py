@@ -55,6 +55,7 @@ class VoiceAIServer:
         host: str = "0.0.0.0",
         port: int = NetworkConfig.WEBSOCKET_PORT,
         use_mock: bool = False,
+        enable_interrupt: bool = True,
         llm_config: Optional[LLMConfig] = None,
         tts_config: Optional[TTSConfig] = None
     ):
@@ -65,12 +66,14 @@ class VoiceAIServer:
             host: 绑定地址
             port: 端口
             use_mock: 是否使用模拟模式
+            enable_interrupt: 是否启用打断机制
             llm_config: LLM 配置
             tts_config: TTS 配置
         """
         self.host = host
         self.port = port
         self.use_mock = use_mock
+        self.enable_interrupt = enable_interrupt
         
         # 客户端上下文
         self._clients: Dict[str, ClientContext] = {}
@@ -96,7 +99,7 @@ class VoiceAIServer:
         self._total_requests = 0
         self._start_time = 0.0
         
-        logger.info(f"VoiceAI Server initialized (mock={use_mock})")
+        logger.info(f"VoiceAI Server initialized (mock={use_mock}, interrupt={enable_interrupt})")
     
     def _setup_routes(self) -> None:
         """设置消息路由"""
@@ -173,9 +176,18 @@ class VoiceAIServer:
             logger.warning(f"No context for client: {client_id}")
             return
         
-        # 如果正在生成，先中断
-        if ctx.is_generating:
+        # 如果正在生成且启用了打断机制，先中断
+        if ctx.is_generating and self.enable_interrupt:
+            logger.info(f"Interrupting previous generation for {client_id}")
             await self._do_interrupt(client_id)
+        elif ctx.is_generating:
+            logger.info(f"Interrupt disabled, waiting for previous generation to complete for {client_id}")
+            # 等待之前的生成完成
+            if ctx.current_task and not ctx.current_task.done():
+                try:
+                    await ctx.current_task
+                except asyncio.CancelledError:
+                    pass
         
         # 添加用户消息到上下文
         ctx.conversation.add_user_message(text)
@@ -188,6 +200,10 @@ class VoiceAIServer:
     
     async def _handle_interrupt(self, client_id: str, data: dict) -> None:
         """处理打断信号"""
+        if not self.enable_interrupt:
+            logger.info(f"Interrupt signal from {client_id} ignored (interrupt disabled)")
+            return
+        
         logger.info(f"Interrupt received from {client_id}")
         await self._do_interrupt(client_id)
         
@@ -250,10 +266,17 @@ class VoiceAIServer:
             
             # 创建文本分块器
             text_chunks = asyncio.Queue()
+            chunk_tasks = []  # 收集所有文本块任务，避免竞态条件
             
             async def on_text_chunk(chunk: TextChunk):
                 """文本块回调"""
+                logger.debug(f"Text chunk ready: '{chunk.text}'")
                 await text_chunks.put(chunk)
+            
+            def on_chunk_ready(chunk: TextChunk):
+                """同步回调，创建异步任务并收集"""
+                task = asyncio.create_task(on_text_chunk(chunk))
+                chunk_tasks.append(task)
             
             # 启动 TTS 处理任务
             tts_task = asyncio.create_task(
@@ -263,7 +286,7 @@ class VoiceAIServer:
             # 流式生成 LLM 响应
             chunker = TextChunker(
                 max_chunk_length=20,
-                on_chunk_ready=lambda c: asyncio.create_task(on_text_chunk(c))
+                on_chunk_ready=on_chunk_ready
             )
             
             # 发送 TTS 开始
@@ -288,6 +311,11 @@ class VoiceAIServer:
             # 刷新剩余文本
             if not ctx.is_interrupted:
                 chunker.flush()
+            
+            # 等待所有文本块任务完成，确保它们都入队后再发送 None
+            if chunk_tasks:
+                await asyncio.gather(*chunk_tasks)
+                logger.debug(f"All {len(chunk_tasks)} text chunks queued")
             
             # 发送结束标记
             await text_chunks.put(None)
@@ -341,10 +369,14 @@ class VoiceAIServer:
                 chunk = await text_queue.get()
                 
                 if chunk is None:
+                    logger.debug("TTS received end marker, stopping")
                     break
                 
                 if ctx and ctx.is_interrupted:
+                    logger.debug("TTS interrupted, stopping")
                     break
+                
+                logger.info(f"TTS synthesizing: '{chunk.text}'")
                 
                 # 合成音频
                 async for audio_chunk in self.tts.synthesize_stream(chunk.text):
@@ -382,7 +414,8 @@ async def run_server(args):
     server = VoiceAIServer(
         host=args.host,
         port=args.port,
-        use_mock=args.mock
+        use_mock=args.mock,
+        enable_interrupt=not args.no_interrupt
     )
     
     await server.start()
@@ -392,6 +425,7 @@ async def run_server(args):
     print("="*50)
     print(f"\n服务地址: ws://{args.host}:{args.port}")
     print(f"模式: {'模拟' if args.mock else '生产'}")
+    print(f"打断机制: {'禁用' if args.no_interrupt else '启用'}")
     print("\n按 Ctrl+C 停止服务\n")
     
     try:
@@ -415,6 +449,8 @@ def main():
                        help='Port number')
     parser.add_argument('--mock', '-m', action='store_true',
                        help='Use mock mode (no real models)')
+    parser.add_argument('--no-interrupt', '-n', action='store_true',
+                       help='Disable interrupt mechanism (wait for previous response to complete)')
     parser.add_argument('--debug', '-d', action='store_true',
                        help='Enable debug logging')
     

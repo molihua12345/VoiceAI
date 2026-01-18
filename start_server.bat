@@ -23,6 +23,7 @@ set HOST=0.0.0.0
 set PORT=8765
 set MOCK_MODE=
 set DEBUG_MODE=
+set NO_INTERRUPT=
 
 :parse_args
 if "%~1"=="" goto run
@@ -70,6 +71,16 @@ if "%~1"=="--debug" (
     shift
     goto parse_args
 )
+if "%~1"=="-n" (
+    set NO_INTERRUPT=-n
+    shift
+    goto parse_args
+)
+if "%~1"=="--no-interrupt" (
+    set NO_INTERRUPT=-n
+    shift
+    goto parse_args
+)
 shift
 goto parse_args
 
@@ -77,9 +88,10 @@ goto parse_args
 echo Starting cloud server...
 echo Host: %HOST%
 echo Port: %PORT%
+if defined NO_INTERRUPT echo Interrupt: disabled
 echo.
 
-python -m cloud_server.main -H %HOST% -p %PORT% %MOCK_MODE% %DEBUG_MODE%
+python -m cloud_server.main -H %HOST% -p %PORT% %MOCK_MODE% %DEBUG_MODE% %NO_INTERRUPT%
 
 if errorlevel 1 (
     echo.
