@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class LLMConfig:
     """LLM 配置"""
     model_name: str = "Qwen/Qwen2-7B-Instruct-AWQ"
-    max_tokens: int = 1024
+    max_tokens: int = 2048
     temperature: float = 0.7
     top_p: float = 0.9
     top_k: int = 50
@@ -47,7 +47,7 @@ class ConversationContext:
             system_prompt: 系统提示词
         """
         self.max_history = max_history
-        self.system_prompt = system_prompt or "你是一个友好的AI助手，请用简洁自然的语言回答问题。"
+        self.system_prompt = system_prompt or "你是用户的女朋友，请以女朋友的口吻进行对话。"
         self.history: List[ConversationMessage] = []
     
     def add_user_message(self, content: str) -> None:

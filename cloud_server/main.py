@@ -307,6 +307,7 @@ class VoiceAIServer:
             
             total_time = (time.time() - start_time) * 1000
             logger.info(f"Response generated for {client_id}: {len(full_response)} chars in {total_time:.1f}ms")
+            logger.info(f"LLM Response: {full_response}")
             
         except asyncio.CancelledError:
             logger.info(f"Generation cancelled for {client_id}")
