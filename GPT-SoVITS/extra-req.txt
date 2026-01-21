@@ -1,1 +1,4 @@
 faster-whisper
+opencc
+torchcodec
+jieba_fast

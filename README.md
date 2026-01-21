@@ -67,8 +67,15 @@ test_mock.bat
 # Ubuntu
 # 配置GPT_SoVITS/configs/tts_infer.yaml修改 custom 部分并启动 GPT-SoVITS 服务
 cd GPT-SoVITS
+conda create -n sovits python=3.10 -y
+conda activate sovits
+pip install -r requirements.txt
+pip install -r extra-req.txt
 python api_v2.py -a 127.0.0.1 -p 9880 -c GPT_SoVITS/configs/tts_infer.yaml
-
+# 配置server环境+启动
+conda create -n voiceai python=3.10 -y
+conda activate voiceai
+pip install -r requirements.txt
 chmod +x start_server.sh
 ./start_server.sh
 ```
@@ -166,6 +173,3 @@ VoiceAI/
 
 详细配置请参考 `config.yaml` 文件。
 
-## 许可证
-
-MIT License

@@ -1,43 +1,60 @@
+# --- 环境索引与安装策略 ---
+--extra-index-url https://download.pytorch.org/whl/cu121
 --no-binary=opencc
+
+# --- 核心深度学习框架 (已更新为 PyTorch 2.3.1+cu121) ---
+torch==2.3.1
+torchvision==0.18.1
+torchaudio==2.3.1
+pytorch-lightning>=2.4
+torchmetrics<=1.5
+torch-complex
+
+# --- 硬件加速与推理 ---
+onnxruntime; platform_machine == "aarch64" or platform_machine == "arm64"
+onnxruntime-gpu; platform_machine == "x86_64" or platform_machine == "AMD64"
+ctranslate2>=4.0,<5
+
+# --- 基础科学计算 (锁定 Numpy 版本以防兼容性破坏) ---
 numpy<2.0
 scipy
 tensorboard
-librosa==0.10.2
 numba
-pytorch-lightning>=2.4
-gradio<5
-ffmpeg-python
-onnxruntime; platform_machine == "aarch64" or platform_machine == "arm64"
-onnxruntime-gpu; platform_machine == "x86_64" or platform_machine == "AMD64"
 tqdm
+psutil
+PyYAML
+chardet
+
+# --- 音频与语音处理 ---
+librosa==0.10.2
 funasr==1.0.27
+ffmpeg-python
+av>=11
+
+# --- NLP / 大模型 / 文本处理 ---
+transformers>=4.43,<=4.50
+tokenizers>=0.13,<1
+huggingface_hub>=0.13
+modelscope==1.10.0
+sentencepiece
+peft
+rotary_embedding_torch
+x_transformers
+
+# --- 多语言与分词工具 ---
 cn2an
 pypinyin
-pyopenjtalk>=0.4.1
 g2p_en
-torchaudio
-modelscope
-sentencepiece
-transformers>=4.43,<=4.50
-peft<0.18.0
-chardet
-PyYAML
-psutil
-jieba_fast
 jieba
 split-lang
 fast_langdetect>=0.3.1
 wordsegment
-rotary_embedding_torch
-ToJyutping 
+ToJyutping
 g2pk2
 ko_pron
-opencc
 python_mecab_ko; sys_platform != 'win32'
+
+# --- Web 交互与 API ---
+gradio<5
 fastapi[standard]>=0.115.2
-x_transformers
-torchmetrics<=1.5
 pydantic<=2.10.6
-ctranslate2>=4.0,<5
-av>=11
-tqdm

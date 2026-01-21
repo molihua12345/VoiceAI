@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class LLMConfig:
     """LLM 配置"""
-    model_name: str = "Qwen/Qwen2-7B-Instruct-AWQ"
+    model_name: str = "Qwen/Qwen2-7B-Instruct-GPTQ-Int4"
     max_tokens: int = 2048
     temperature: float = 0.7
     top_p: float = 0.9
@@ -109,14 +109,15 @@ class LLMEngine:
             start_time = time.time()
             
             # 加载 vLLM
+            # 修改点 2: 调整 vLLM 加载参数
             self._llm = LLM(
                 model=self.config.model_name,
                 trust_remote_code=True,
                 gpu_memory_utilization=self.config.gpu_memory_utilization,
-                dtype="half",  # FP16
-                quantization="awq",
+                dtype="half",  # V100 必须使用 FP16 (half)，因为它不支持 BF16
+                quantization="gptq", # 将 awq 改为 gptq
                 max_model_len=4096,
-                enforce_eager=False,  # 启用 CUDA graph
+                enforce_eager=False, 
             )
             
             # 加载 tokenizer
