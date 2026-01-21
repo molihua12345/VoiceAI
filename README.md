@@ -75,13 +75,14 @@ python api_v2.py -a 127.0.0.1 -p 9880 -c GPT_SoVITS/configs/tts_infer.yaml
 # 配置server环境+启动
 conda create -n voiceai python=3.10 -y
 conda activate voiceai
-pip install -r requirements.txt
+pip install -r requirements_cloud.txt
 chmod +x start_server.sh
 ./start_server.sh
 ```
 
 然后在本地启动客户端：
 ```bash
+uv sync --extra local
 # Windows
 .venv\Scripts\Activate.ps1 #powershell
 # or
